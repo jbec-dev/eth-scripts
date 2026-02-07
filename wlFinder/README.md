@@ -1,5 +1,6 @@
 # wlFinder
 wlFinder is a simple offline tool for Linux to check a password against various public wordlists.
+The main tool is called "wlfinder.py".
 
 ## How it works:
 wlFinder groups wordlists into thematic categories (e.g. common passwords, time-related terms).
