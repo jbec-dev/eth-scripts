@@ -1,0 +1,9 @@
+# wlFinder
+wlFinder is a simple offline tool for Linux to check a password against various public wordlists.
+
+## How it works:
+wlFinder groups wordlists into thematic categories (e.g. common passwords, time-related terms).
+During a check, categories are processed sequentially, allowing early detection of weak passwords while keeping runtime low.
+
+### Side Note
+The program uses the SecLists wordlists for Linux, which have to be installed manually at /usr/share/seclists by the user.
