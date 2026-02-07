@@ -8,3 +8,7 @@ During a check, categories are processed sequentially, allowing early detection 
 ### Side Note
 The program uses the SecLists wordlists for Linux, which have to be installed manually at /usr/share/seclists by the user.
 > Make sure you have Python3.x installed, as the software is based on the Python programming language.
+
+
+## License
+Please view the LICENSE.txt file for additional Information
