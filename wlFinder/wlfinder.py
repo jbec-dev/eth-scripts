@@ -96,3 +96,5 @@ if check_score != 0:
     cprint(f"\n[+] Your password was found in {check_score} categories!", "red")
 else:
     print(f"{MINT_GREEN}\n[+] Your password was not found in any of the checked wordlists!{RESET}")
+
+# Copyright 2026 jbec-dev
