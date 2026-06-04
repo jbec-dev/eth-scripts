@@ -66,8 +66,7 @@ def checkfl(wl_array, wl_dir, passw_str):
                 if passw_str in line:
                     found = True
                     break
-    if found == True:
-        return True
+    return found
 
 # ---------- Check Wordlists -----------
 
