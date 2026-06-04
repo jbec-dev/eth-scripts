@@ -5,12 +5,6 @@
 # -> Uses the most popular wordlists! <-
 # -> ! SecLists has to be installed ! <-
 
-import os
-import sys
-from getpass import getpass
-
-from termcolor import cprint
-
 # -------------- Banner ----------------
 
 BANNER = r"""
@@ -24,82 +18,81 @@ BANNER = r"""
 """
 print(BANNER)
 
+# -------------- Imports ---------------
+
+import os
+from termcolor import colored, cprint
+from getpass import getpass
+
 # -------------- Colours ---------------
 
 MINT_GREEN = "\033[38;2;152;251;152m"  # light mint green (RGB)
 PASTEL_BLUE = "\033[38;2;176;224;230m"  # powder blue
+
 RESET = "\033[0m"
 
-SECLISTS_ROOT = "/usr/share/seclists"
-
 # ------------- Categories -------------
-WORDLIST_CATEGORIES = {
-    "common": {
-        "directory": "Passwords/Common-Credentials",
-        "files": [
-            "100k-most-used-passwords-NCSC.txt",
-            "xato-net-10-million-passwords.txt",
-            "top-20-common-SSH-passwords.txt",
-        ],
-    },
-    "time": {
-        "directory": "Passwords",
-        "files": ["seasons.txt", "months.txt", "days.txt"],
-    },
-    "default": {
-        "directory": "Passwords/Default-Credentials",
-        "files": ["default-passwords.txt", "ssh-betterdefaultpasslist.txt"],
-    },
-    "cracked": {
-        "directory": "Passwords/Cracked-Hashes",
-        "files": ["milw0rm-dictionary.txt"],
-    },
-    "general": {
-        "directory": "Passwords",
-        "files": ["darkc0de.txt", "openwall.net-all.txt"],
-    },
-}
+wordlists_common = ["100k-most-used-passwords-NCSC.txt", "xato-net-10-million-passwords.txt", "top-20-common-SSH-passwords.txt", ]
+wordlists_time = ["seasons.txt", "months.txt", "days.txt"]
+wordlists_default = ["default-passwords.txt", "ssh-betterdefaultpasslist.txt"]
+wordlists_cracked = ["milw0rm-dictionary.txt"]
+wordlists_general = ["darkc0de.txt", "openwall.net-all.txt"]
 
-
-# ---------------- Helpers ----------------
-def check_category(files, directory, password):
-    """Return True if password matches any line in any file in the category."""
-    for filename in files:
-        wl_file = os.path.join(directory, filename)
-        try:
-            with open(wl_file, "r", encoding="utf-8", errors="ignore") as handle:
-                for line in handle:
-                    if password == line.rstrip("\r\n"):
-                        return True
-        except FileNotFoundError:
-            cprint(f"[!] Missing wordlist file: {wl_file}", "yellow")
-        except OSError as err:
-            cprint(f"[!] Could not read {wl_file}: {err}", "yellow")
-    return False
 
 
 # ---------------- Main ----------------
-if not os.path.isdir(SECLISTS_ROOT):
-    cprint("Please install SecLists (sudo apt install seclists)!", "red")
-    sys.exit(1)
 
-print(f"{MINT_GREEN}[+] SecLists found!{RESET}")
+# Check for SecLists
 
-password = getpass(f"{PASTEL_BLUE}[I] Please enter the Password to check: {RESET}")
+share = os.listdir("/usr/share")
+for i in range(1):    
+    if "seclists" in share:
+        print(f"{MINT_GREEN}[+] SecLists found!{RESET}")
+        continue
+    else:
+        cprint("Please install SecLists (sudo apt install seclists)!\n", "red")
+        break
 
-matched_categories = []
-for category_name, category in WORDLIST_CATEGORIES.items():
-    category_directory = os.path.join(SECLISTS_ROOT, category["directory"])
-    if check_category(category["files"], category_directory, password):
-        matched_categories.append(category_name)
+# Read user input to passw variable
+passw = getpass(f"{PASTEL_BLUE}[I] Please enter the Password to check: {RESET}")
+
+# check wordlists function
+def checkfl(wl_array, wl_dir, passw_str):
+    for i in range(len(wl_array)):
+        found = False
+        wl_file = f"{wl_dir}{wl_array[i]}"
+        with open(wl_file, "r") as f:
+            for line in f:
+                if passw_str in line:
+                    found = True
+                    break
+    return True
+
+# ---------- Check Wordlists -----------
+
+common_check = checkfl(wordlists_common, "/usr/share/seclists/Passwords/Common-Credentials/", passw)
+time_check = checkfl(wordlists_time, "/usr/share/seclists/Passwords/", passw)
+default_check = checkfl(wordlists_default, "/usr/share/seclists/Passwords/Default-Credentials/", passw)
+cracked_check = checkfl(wordlists_cracked, "/usr/share/seclists/Passwords/Cracked-Hashes/", passw)
+general_check = checkfl(wordlists_general, "/usr/share/seclists/Passwords/", passw)
+
+check_score = 0
+
+if common_check:
+    check_score += 1
+if time_check:
+    check_score += 1
+if default_check:
+    check_score += 1
+if cracked_check:
+    check_score += 1
+if general_check:
+    check_score += 1
 
 # ----------- Show Results -------------
-if matched_categories:
-    cprint(
-        f"\n[+] Your password was found in {len(matched_categories)} categories: "
-        + ", ".join(matched_categories),
-        "red",
-    )
+
+if check_score != 0:
+    cprint(f"\n[+] Your password was found in {check_score} categories!", "red")
 else:
     print(f"{MINT_GREEN}\n[+] Your password was not found in any of the checked wordlists!{RESET}")
 
