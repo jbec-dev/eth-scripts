@@ -50,7 +50,7 @@ for i in range(1):
         print(f"{MINT_GREEN}[+] SecLists found!{RESET}")
         continue
     else:
-        cprint("Please install SecLists (sudo apt install seclists)!\n", "red")
+        cprint("Please install SecLists (Debian: sudo apt install seclists / Arch: yay -S seclists)!\n", "red")
         break
 
 # Read user input to passw variable
